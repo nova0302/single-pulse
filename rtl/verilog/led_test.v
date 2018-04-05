@@ -55,7 +55,7 @@ module led_test
    end
    
    // conter register
-   always@(posedge CLK or negedge RSTn)
+   always@(posedge CLK, negedge RSTn)
      if(!RSTn)
        count_r <= 0;
      else 
