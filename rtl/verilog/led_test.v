@@ -9,41 +9,57 @@ module led_test
    #(parameter NUM_COUNT = 50000000)
 `endif
    (
-    input  clk, rst_n,
-    output led
+    input  CLK, //system clock 50Mhz
+    input  RSTn, SP,
+    output STEP
     );
 
+   localparam OFF = 1'b0, ON = 1'b1;
+
    integer count_r, count_n;
-   reg 	   led_r, led_n;
+   reg 	   State, nState;
+   reg 	   sp_dly;
+   wire    start;
 
-   assign led = led_r;
+   assign start = ~sp_dly & SP;
+   always@(posedge CLK)
+     sp_dly <= SP;
+
+   assign STEP = (State == ON);
+
+   // State register
+   always @(posedge CLK, negedge RSTn)
+     if(!RSTn)
+       State <= OFF;
+     else
+       State <= nState;
+
+   // next State comb block
+   always@* begin
+      nState = State;  //defaults
+      count_n = count_r;
+
+      case(State)
+	OFF: begin
+	   count_n = 0;
+	   if(start) 
+	     nState = ON;
+	end
+	
+	ON: begin
+	   count_n = count_r + 1;
+	   if(count_r == NUM_COUNT)
+	     nState = OFF;
+	end
+      endcase // case (State)
+   end
+   
    // conter register
-   always@(posedge clk or negedge rst_n)
-     if(!rst_n)
+   always@(posedge CLK or negedge RSTn)
+     if(!RSTn)
        count_r <= 0;
-     else
+     else 
        count_r <= count_n;
-
-   // counter combinational logic
-   always@* 
-     if(count_r == NUM_COUNT)
-       count_n = 0;
-     else
-       count_n = count_r+1;
-
-   // led register
-   always@(posedge clk or negedge rst_n)
-     if(!rst_n)
-       led_r <= 0;
-     else
-       led_r <= led_n;
-
-   // led combinational logic
-   always@*
-     if(count_r == NUM_COUNT)
-       led_n = ~led_r;
-     else
-       led_n = led_r;
 
 endmodule // led_test
 

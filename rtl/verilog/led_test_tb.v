@@ -5,32 +5,35 @@ module   led_test_tb;
    localparam PERIOD = 10;
    localparam NUM_COUNT = 5;
 
-   reg clk, rst_n, led;
+   reg CLK, RSTn=0, SP=0;
+   wire STEP;
 
+   // input driving
    initial begin
-      clk <= 1'b1;
-      forever #(PERIOD/2) clk <= ~clk;
-   end
-
-   initial begin
-      repeat(30) @(posedge clk);
+      RSTn = 0;
+      #15 RSTn <= 1;
+      repeat(3) @(posedge CLK);
+      SP <= 1'b1;
+      @(posedge CLK);
+      SP <= 1'b0;
+      repeat(15) @(posedge CLK);
       $finish;
    end
 
-   always @(posedge clk)
-     $monitor("@%0tns count=%0h led = %0d",$time, dut.count_r, led);
-
-   initial begin
-      rst_n = 0;
-      #15 rst_n <= 1;
-      @ (posedge clk);
-      repeat (30) @ (posedge clk);
-      $finish;
-   end
+   // design under test
 `ifdef GATE_SIM
    led_test  dut(.*);
 `else
    led_test #(.NUM_COUNT(NUM_COUNT)) dut(.*);
 `endif
 
+   // output monitoring
+   always @(posedge CLK)
+     $monitor("@%0tns count=%0h STEP = %0d",$time, dut.count_r, STEP);
+
+   // clock generation
+   initial begin
+      CLK <= 1'b1;
+      forever #(PERIOD/2) CLK <= ~CLK;
+   end
 endmodule // led_test_tb

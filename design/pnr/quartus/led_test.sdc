@@ -1,7 +1,7 @@
 
 
 # Constrain clock port clk with 10-ns requirement
-create_clock -name clk -period 20 [get_ports clk]
+create_clock -name clk -period 20 [get_ports CLK]
 
 # Set Clock Uncertainty
 set_clock_uncertainty -rise_from [get_clocks {clk}] -rise_to [get_clocks {clk}] 0.020
