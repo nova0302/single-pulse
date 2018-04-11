@@ -29,7 +29,8 @@ module   led_test_tb;
 
    // output monitoring
    always @(posedge CLK)
-     $monitor("@%0tns count: %0h STEP: %0d dut.State: %0b",$time, dut.count_r, STEP, dut.State);
+     $("@%0tns count: %0h STEP: %0d dut.State: %0b",$time, dut.count_r, STEP, dut.State);
+     ///$monitor("@%0tns count: %0h STEP: %0d dut.State: %0b",$time, dut.count_r, STEP, dut.State);
 
    // clock generation
    initial begin
