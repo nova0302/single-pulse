@@ -37,20 +37,24 @@ module led_test
    // next State comb block
    always@* begin
       nState = State;  //defaults
-      count_n = count_r;
-
       case(State)
-	OFF: begin
-	   count_n = 0;
-	   if(start) 
-	     nState = ON;
-	end
-	
-	ON: begin
-	   count_n = count_r + 1;
-	   if(count_r == NUM_COUNT)
-	     nState = OFF;
-	end
+	OFF: 
+	  if(start) 
+	    nState = ON;
+	ON: 
+	  if(count_r == NUM_COUNT)
+	    nState = OFF;
+      endcase // case (State)
+   end
+
+   // next State comb block
+   always@* begin
+      count_n = count_r;
+      case(State)
+	OFF: 
+	  count_n = 0;
+	ON: 
+	  count_n = count_r + 1;
       endcase // case (State)
    end
    
